@@ -20,7 +20,7 @@ import org.springframework.messaging.MessageHandler;
 @Configuration
 public class ProducingChannelConfig {
 
-    @Value("${kafka.bootstrap-servers}")
+    /*@Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     @Bean
@@ -58,5 +58,5 @@ public class ProducingChannelConfig {
         properties.put(ProducerConfig.LINGER_MS_CONFIG, 1);
 
         return properties;
-    }
+    }*/
 }

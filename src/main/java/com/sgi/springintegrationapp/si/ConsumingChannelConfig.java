@@ -20,7 +20,7 @@ import org.springframework.kafka.listener.config.ContainerProperties;
 @Configuration
 public class ConsumingChannelConfig {
 
-    @Value("${kafka.bootstrap-servers}")
+    /*@Value("${kafka.bootstrap-servers}")
     private String bootstrapServers;
 
     @Value("${kafka.topic.spring-integration-kafka}")
@@ -71,5 +71,5 @@ public class ConsumingChannelConfig {
         properties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         return properties;
-    }
+    }*/
 }
