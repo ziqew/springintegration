@@ -9,11 +9,14 @@ import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.file.FileReadingMessageSource;
+import org.springframework.integration.file.FileWritingMessageHandler;
 import org.springframework.integration.file.filters.CompositeFileListFilter;
 import org.springframework.integration.file.filters.LastModifiedFileListFilter;
 import org.springframework.integration.file.filters.SimplePatternFileListFilter;
+import org.springframework.integration.file.support.FileExistsMode;
 import org.springframework.integration.file.transformer.FileToStringTransformer;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHandler;
 
 import java.io.File;
 
@@ -29,7 +32,7 @@ public class FileInFlowConfig {
 
         FileReadingMessageSource source = new FileReadingMessageSource();
         source.setAutoCreateDirectory(true);
-        source.setDirectory(new File("~/share/"));
+        source.setDirectory(new File("~/share/input"));
         source.setFilter(filters);
 
         return source;
@@ -45,7 +48,15 @@ public class FileInFlowConfig {
         return IntegrationFlows
                 .from("fileInputChannel")
                 .transform(fileToStringTransformer())
-                .handle("fileProcessor", "process").get();
+                .handle("fileProcessor", "process").handle(targetDirectory()).get();
+    }
+
+    @Bean
+    public MessageHandler targetDirectory() {
+        FileWritingMessageHandler handler = new FileWritingMessageHandler(new File("~/share/output"));
+        handler.setFileExistsMode(FileExistsMode.REPLACE);
+        handler.setExpectReply(false);
+        return handler;
     }
 
     @Bean
