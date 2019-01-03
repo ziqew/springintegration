@@ -32,7 +32,7 @@ public class FileInFlowConfig {
 
         FileReadingMessageSource source = new FileReadingMessageSource();
         source.setAutoCreateDirectory(true);
-        source.setDirectory(new File("~/share/input"));
+        source.setDirectory(new File("/Users/kdyq/share/input"));
         source.setFilter(filters);
 
         return source;
@@ -53,7 +53,7 @@ public class FileInFlowConfig {
 
     @Bean
     public MessageHandler targetDirectory() {
-        FileWritingMessageHandler handler = new FileWritingMessageHandler(new File("~/share/output"));
+        FileWritingMessageHandler handler = new FileWritingMessageHandler(new File("/Users/kdyq/share/output/"));
         handler.setFileExistsMode(FileExistsMode.REPLACE);
         handler.setExpectReply(false);
         return handler;

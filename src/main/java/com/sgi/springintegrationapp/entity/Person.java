@@ -1,8 +1,8 @@
 package com.sgi.springintegrationapp.entity;
 
-import javax.xml.bind.annotation.XmlRootElement;
+//import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+//@XmlRootElement
 public class Person {
     private long id;
     private String name;
