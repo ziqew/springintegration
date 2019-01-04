@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-http="http://www.springframework.org/schema/integration/http"
+       xmlns:int-file="http://www.springframework.org/schema/integration/file"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration
+		http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/http
+		http://www.springframework.org/schema/integration/http/spring-integration-http.xsd
+http://www.springframework.org/schema/integration/file
+			http://www.springframework.org/schema/integration/file/spring-integration-file.xsd">
+
+    <!--flow 1 -->
+
+    <int-http:inbound-channel-adapter id="httpInboundAdapter"
+                                      channel="receiveChannel"
+                                      path="/dataAsynchronous"
+                                      supported-methods="GET, POST">
+    </int-http:inbound-channel-adapter>
+
+
+
+
+    <int:channel id="receiveChannel"/>
+
+
+    <int:service-activator input-channel="receiveChannel"
+                           ref="receiveService">
+    </int:service-activator>
+
+    <bean id="receiveService" class="com.kedacom.data.exchange.starter.service.HttpReceiveService"/>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+
+    <int:channel id="writeToJson"/>
+
+    <int:service-activator input-channel="writeToJson"
+                           output-channel="jsonFile"
+                           ref="syncFileService"/>
+
+    <!--<file:outbound-channel-adapter id="jsonFile" directory="D:\outputFile"-->
+    <int-file:outbound-channel-adapter id="jsonFile" directory="${exchange.file.fileOutboundPath}"
+                                       filename-generator="nameGenerator"
+    />
+
+    <bean id="nameGenerator" class="com.kedacom.data.exchange.starter.util.GenerateFileName"/>
+
+    <bean id="syncFileService" class="com.kedacom.data.exchange.starter.service.SyncFileService"/>
+
+
+
+    <int-file:inbound-channel-adapter id="asyFilesIn"
+                                      directory="${exchange.file.asyncInboundPath}">
+        <int:poller id="poller" fixed-delay="5000"/>
+    </int-file:inbound-channel-adapter>
+
+    <int-file:file-to-string-transformer input-channel="asyFilesIn" output-channel="fileToString" delete-files="true"/>
+
+    <int:channel id="fileToString"/>
+
+    <int:service-activator input-channel="fileToString"
+                           ref="handler"/>
+
+
+    <bean id="handler" class="com.kedacom.data.exchange.starter.service.AsyFileService"/>
+
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+
+
+</beans>
